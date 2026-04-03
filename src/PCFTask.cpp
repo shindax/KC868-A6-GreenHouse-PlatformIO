@@ -1,12 +1,13 @@
 #include "defines.h"
 
-void pollingCallback(void * parameter ) 
+void PCFTask(void * parameter ) 
 {
   uint8_t temp;
 
-  if( i2c_Mutex )
+  if( i2cMutex )
     while(1){
-      if( xSemaphoreTake( i2c_Mutex, portMAX_DELAY ) == pdTRUE ){
+      if( xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){
+        Wire.setClock(WIRE_BUS_CLOCK);
         temp = pcfIn.read8();
         if ( temp != digitalInputs) {
           digitalInputs = temp;
@@ -18,8 +19,11 @@ void pollingCallback(void * parameter )
               digitalOutputs &= ~ 0x20;
 
         pcfOut.write8( ~ digitalOutputs );
-        xSemaphoreGive( i2c_Mutex );
-        vTaskDelay(pdMS_TO_TICKS(50));
+
+        pcfOut.write8( 0xFF ^ ( int ) temperature );
+
+        xSemaphoreGive( i2cMutex );
+        vTaskDelay(50);
       }
     }
   vTaskDelete(NULL);

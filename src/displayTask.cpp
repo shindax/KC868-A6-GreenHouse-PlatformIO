@@ -13,13 +13,15 @@ void OLEDClearAndPrint( int x, int y, String oldValue, String newValue, const un
   u8g2.setFontMode(0);
   u8g2.setCursor(x, y);
   u8g2.print(newValue.c_str());  
-}
+}// void OLEDClearAndPrint( int x, int y, String oldValue, String newValue, const unsigned char * font )
 
-void oledCallback(void *parameter)
+void OLEDTask(void *parameter)
 {
-  if( i2c_Mutex )
+  if( i2cMutex )
     while(1){
-      if( xSemaphoreTake( i2c_Mutex, portMAX_DELAY ) == pdTRUE ){
+      if( 
+          xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE 
+        ){
           u8g2.setBusClock(OLED_BUS_CLOCK);
 
           String monthName = monthNames[now.month() - 1];
@@ -46,13 +48,13 @@ void oledCallback(void *parameter)
           oldValue = String( prev_temperature ) + String("C");
           newValue = String( temperature ) + String("C");  
           // newValue = String( getTemperature( LM75_ADDR_ONE ) ) + String("C");
-          OLEDClearAndPrint( 35, 20, oldValue, newValue, u8g2_font_lubR10_tr );
+          OLEDClearAndPrint( 0, 20, oldValue, newValue, u8g2_font_lubR10_tr );
 
           u8g2.sendBuffer();
-          xSemaphoreGive( i2c_Mutex );
+          xSemaphoreGive( i2cMutex );
           vTaskDelay(200);
       }
   }
   vTaskDelete(NULL);
-}  // void oledCallback()
+}  // void OLEDTask()
 

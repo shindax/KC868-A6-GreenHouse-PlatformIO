@@ -1,13 +1,13 @@
 #include "defines.h"
 
-void timeCallback( void *parameter ) 
+void RTCTask( void *parameter ) 
 {
-  if( i2c_Mutex )
+  if( i2cMutex )
     while(1){
-      if( xSemaphoreTake( i2c_Mutex, portMAX_DELAY ) == pdTRUE ){
+      if( xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){
         Wire.setClock(WIRE_BUS_CLOCK);
         now = rtc.now();
-        xSemaphoreGive( i2c_Mutex );
+        xSemaphoreGive( i2cMutex );
         vTaskDelay(500);
       }
     }
