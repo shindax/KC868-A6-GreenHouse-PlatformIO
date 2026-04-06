@@ -40,10 +40,10 @@ float getTemperature( unsigned char );
 void initModule( bool status, String startMsg, String okMsg, String faultMsg );
 void OLEDClearAndPrint( int x, int y, String oldValue, String newValue, const unsigned char * font );
 
-void OLEDTask( void * );
-void PCFTask( void * );
-void RTCTask( void * );
-void dotTask( void * );
+void vOLEDTask( void * );
+void vPCFTask( void * );
+void vRTCTask( void * );
+void vDotTask( void * );
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 extern RTC_DS1307 rtc;

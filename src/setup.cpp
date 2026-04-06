@@ -15,7 +15,7 @@ void setup( void )
     else
         Serial.println(F("failed."));
   
-  if( i2cMutex ){ // I2C available
+  if( i2cMutex && xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){ // I2C available
         initModule( pcfIn.begin(), "Initialising inputs...", "done.", "Error initialising PCF8574 input!" );
         initModule( pcfOut.begin(), "Initialising outputs...", "done.", "Error initialising PCF8574 output!" );
         initModule( rtc.begin(), "Starting RTC...", "done.", "Couldn't find RTC" );
@@ -35,13 +35,17 @@ void setup( void )
       u8g2.setFlipMode(true); // rotate 180 deg
 
       // tasks related to I2C
-      xTaskCreatePinnedToCore(RTCTask,  "RTCTask",  4000, NULL, 5, NULL, 1);  
-      xTaskCreatePinnedToCore(OLEDTask, "OLEDTask", 4000, NULL, 5, NULL, 1);
-      xTaskCreatePinnedToCore(PCFTask,  "PCFTask",  4000, NULL, 5, NULL, 1);
+      xTaskCreate(vRTCTask,  "RTCTask",  4000, NULL, 5, NULL);      
+      xTaskCreate(vOLEDTask, "OLEDTask", 4000, NULL, 5, NULL);
+      xTaskCreate(vPCFTask,  "PCFTask",  4000, NULL, 20, NULL);
+      xSemaphoreGive( i2cMutex );
   }
 
   digitalOutputs = 0;
   pinMode( BUTTON_PIN, INPUT_PULLUP );
-
-  xTaskCreatePinnedToCore(dotTask, "dotTask", 1500, NULL, 5, NULL, 1);
+  xTaskCreate(vDotTask, "dotTask", 1500, NULL, 5, NULL);
+  Serial.println();
+  Serial.print( "max priority is: " );
+  Serial.println( configMAX_PRIORITIES );
 }  // setup( void )
+

@@ -37,7 +37,7 @@ void stackSizeCalc( void )
     vTaskDelay(5000);
 }
 
-void dotTask( void * parameter ) 
+void vDotTask( void * parameter ) 
 {
   while(1){
     Serial.print(".");
@@ -47,7 +47,7 @@ void dotTask( void * parameter )
     vTaskDelay(5000);
   }
   vTaskDelete(NULL);
-}
+}// vDotTask
 
 
 void loop(void) 

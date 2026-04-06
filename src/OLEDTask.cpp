@@ -15,7 +15,7 @@ void OLEDClearAndPrint( int x, int y, String oldValue, String newValue, const un
   u8g2.print(newValue.c_str());  
 }// void OLEDClearAndPrint( int x, int y, String oldValue, String newValue, const unsigned char * font )
 
-void OLEDTask(void *parameter)
+void vOLEDTask(void *parameter)
 {
   if( i2cMutex )
     while(1){
@@ -56,5 +56,5 @@ void OLEDTask(void *parameter)
       }
   }
   vTaskDelete(NULL);
-}  // void OLEDTask()
+}  // void vOLEDTask()
 
