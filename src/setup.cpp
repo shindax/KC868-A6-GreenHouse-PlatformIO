@@ -6,6 +6,9 @@ void setup( void )
   while (!Serial)
     delay(10);
 
+  minutesCheckSemaphore = xSemaphoreCreateBinary();
+  nightSemaphore = xSemaphoreCreateBinary();
+
   Serial.println(__FILE__ __DATE__);
   Serial.print(F("Starting I2C interface..."));
   if( Wire.begin(I2C_SDA, I2C_SCL) ){
@@ -43,9 +46,9 @@ void setup( void )
 
   digitalOutputs = 0;
   pinMode( BUTTON_PIN, INPUT_PULLUP );
+
   xTaskCreate(vDotTask, "dotTask", 1500, NULL, 5, NULL);
-  Serial.println();
-  Serial.print( "max priority is: " );
-  Serial.println( configMAX_PRIORITIES );
+  xTaskCreate(vWateringTask, "WateringTask", 1500, NULL, 20, NULL);  
+
 }  // setup( void )
 

@@ -26,6 +26,8 @@ uint8_t digitalInputs = 0;
 uint8_t digitalOutputs = 0;
 
 SemaphoreHandle_t i2cMutex = 0;
+SemaphoreHandle_t minutesCheckSemaphore = 0;
+SemaphoreHandle_t nightSemaphore = 0;
 
 void stackSizeCalc( void )
 {
@@ -43,7 +45,6 @@ void vDotTask( void * parameter )
     Serial.print(".");
     prev_temperature = temperature;
     temperature += 0.01;
-
     vTaskDelay(5000);
   }
   vTaskDelete(NULL);

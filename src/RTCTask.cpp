@@ -1,17 +1,24 @@
 #include "defines.h"
 
-void vRTCTask( void *parameter ) 
+void vRTCTask( void * parameter ) 
 {
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+
   if( i2cMutex )
     while(1){
-      if( xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){
+      if( getMutex( i2cMutex ) == pdTRUE ){        
         Wire.setClock(WIRE_BUS_CLOCK);
         now = rtc.now();
-        if( ! now.second() )
-          Serial.print("minutes changed");
-        xSemaphoreGive( i2cMutex );
-      }
-      vTaskDelay(500);
-    }
+        returnMutex( i2cMutex );
+      }// if( xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){
+      
+      if( now.second() == 0 )// Check time every minute
+          setSemaphore( minutesCheckSemaphore );
+
+      if( now.hour() == 0 )// Night time
+          setSemaphore( nightSemaphore );
+
+      vTaskDelayUntil( &xLastWakeTime, 1000 );
+    }// while(1){
   vTaskDelete(NULL);
 }// vRTCTask

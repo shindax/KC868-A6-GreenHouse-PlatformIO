@@ -44,6 +44,20 @@ void vOLEDTask( void * );
 void vPCFTask( void * );
 void vRTCTask( void * );
 void vDotTask( void * );
+void vWateringTask( void * );
+
+// FreeRTOS definitions
+
+BaseType_t getMutex( SemaphoreHandle_t );
+BaseType_t returnMutex( SemaphoreHandle_t );
+BaseType_t setSemaphore( SemaphoreHandle_t );
+BaseType_t waitSemaphore( SemaphoreHandle_t );
+
+extern SemaphoreHandle_t i2cMutex;
+extern SemaphoreHandle_t minutesCheckSemaphore;
+extern SemaphoreHandle_t nightSemaphore = 0;
+
+// ----------------------------------------------
 
 extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 extern RTC_DS1307 rtc;
@@ -56,7 +70,6 @@ extern float temperature, prev_temperature;
 extern PCF8574 pcfIn;
 extern PCF8574 pcfOut;
 extern FM24 fm24;
-extern SemaphoreHandle_t i2cMutex;
 
 extern uint8_t digitalInputs;
 extern uint8_t digitalOutputs;
