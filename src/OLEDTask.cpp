@@ -47,7 +47,6 @@ void vOLEDTask(void *parameter)
 
           oldValue = String( prev_temperature ) + String("C");
           newValue = String( temperature ) + String("C");  
-          // newValue = String( getTemperature( LM75_ADDR_ONE ) ) + String("C");
           OLEDClearAndPrint( 0, 20, oldValue, newValue, u8g2_font_lubR10_tr );
 
           u8g2.sendBuffer();

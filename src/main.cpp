@@ -11,7 +11,7 @@ constexpr byte PCF8574_OUT_ADDRESS = 0x24;
 
 RTC_DS1307 rtc;
 DateTime now;
-HT16K33 HT( 0x70, &Wire );
+HT16K33 ht16k33( 0x70, &Wire );
 FM24 fm24;
 
 PCF8574 pcfIn(PCF8574_IN_ADDRESS, &Wire);
@@ -22,11 +22,9 @@ char monthNames[12][4] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG
 float temperature = 0, prev_temperature = 0;
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, I2C_SCL, I2C_SDA);
 
-uint8_t digitalInputs = 0;
-uint8_t digitalOutputs = 0;
-
 SemaphoreHandle_t i2cMutex = 0;
 EventGroupHandle_t eventGroup = 0;
+EventGroupHandle_t inputsOutputs = 0;
 
 void stackSizeCalc( void )
 {
@@ -44,6 +42,7 @@ void vDotTask( void * parameter )
     Serial.print(".");
     prev_temperature = temperature;
     temperature += 0.01;
+    updateOutputs(( int ) temperature );
     vTaskDelay(5000);
   }
   vTaskDelete(NULL);

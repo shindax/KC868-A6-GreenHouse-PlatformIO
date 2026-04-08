@@ -13,5 +13,6 @@ float getTemperature( uint8_t addr )
     int16_t rawTemp = ( ( temp_high << 8 ) | temp_low ) >> 4 ;
     temperature = (float)rawTemp * 0.0625; // 0.125 для 11-бит, или *0.5 для 9-бит
   // }
+
   return temperature;
 }

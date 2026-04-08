@@ -4,7 +4,7 @@ void vWateringTask( void * parameter )
 {
     while(1){
         waitFlag( MINUTE_PASSED_FLAG );
-        Serial.print("Watering check completed");
+        Serial.println("Watering check completed");
         resetFlag( MINUTE_PASSED_FLAG );
         vTaskDelay(20);
     }

@@ -7,6 +7,7 @@ void setup( void )
     delay(10);
 
   eventGroup = xEventGroupCreate();
+  inputsOutputs = xEventGroupCreate();  
   
   Serial.println(__FILE__ __DATE__);
   Serial.print(F("Starting I2C interface..."));
@@ -21,7 +22,7 @@ void setup( void )
         initModule( pcfIn.begin(), "Initialising inputs...", "done.", "Error initialising PCF8574 input!" );
         initModule( pcfOut.begin(), "Initialising outputs...", "done.", "Error initialising PCF8574 output!" );
         initModule( rtc.begin(), "Starting RTC...", "done.", "Couldn't find RTC" );
-        initModule( HT.begin(), "Starting HT16K33...", "done.", "Couldn't find HT16K33" );
+        initModule( ht16k33.begin(), "Starting HT16K33...", "done.", "Couldn't find HT16K33" );
 
         if (!rtc.isrunning()) {
           Serial.println(F("RTC is NOT running, let's set the time!"));
@@ -43,7 +44,6 @@ void setup( void )
       xSemaphoreGive( i2cMutex );
   }
 
-  digitalOutputs = 0;
   pinMode( BUTTON_PIN, INPUT_PULLUP );
 
   xTaskCreate(vDotTask, "dotTask", 1500, NULL, 5, NULL);
