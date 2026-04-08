@@ -26,8 +26,7 @@ uint8_t digitalInputs = 0;
 uint8_t digitalOutputs = 0;
 
 SemaphoreHandle_t i2cMutex = 0;
-SemaphoreHandle_t minutesCheckSemaphore = 0;
-SemaphoreHandle_t nightSemaphore = 0;
+EventGroupHandle_t eventGroup = 0;
 
 void stackSizeCalc( void )
 {

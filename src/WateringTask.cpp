@@ -1,10 +1,11 @@
 #include "defines.h"
 
-void vWateringTask( void *parameter ) 
+void vWateringTask( void * parameter ) 
 {
     while(1){
-        if( waitSemaphore( minutesCheckSemaphore ) == pdPASS )
-            Serial.print("Watering check completed");
+        waitFlag( MINUTE_PASSED_FLAG );
+        Serial.print("Watering check completed");
+        resetFlag( MINUTE_PASSED_FLAG );
         vTaskDelay(20);
     }
   vTaskDelete(NULL);

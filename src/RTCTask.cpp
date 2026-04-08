@@ -13,10 +13,13 @@ void vRTCTask( void * parameter )
       }// if( xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){
       
       if( now.second() == 0 )// Check time every minute
-          setSemaphore( minutesCheckSemaphore );
+          setFlag( MINUTE_PASSED_FLAG );
+
+      if( now.second() == 5 || now.second() == 35 )
+          setFlag( MIDNIGHT_HAS_COME_FLAG );
 
       if( now.hour() == 0 )// Night time
-          setSemaphore( nightSemaphore );
+          setFlag( MIDNIGHT_HAS_COME_FLAG );
 
       vTaskDelayUntil( &xLastWakeTime, 1000 );
     }// while(1){

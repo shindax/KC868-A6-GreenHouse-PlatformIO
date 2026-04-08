@@ -24,6 +24,16 @@
 #define IN_4          16
 #define IN_5          32
 
+// Flags
+#define MINUTE_PASSED_FLAG      1
+#define MIDNIGHT_HAS_COME_FLAG  2
+#define FLAG_3                  4
+#define FLAG_4                  8
+#define FLAG_5                  16
+#define FLAG_6                  32
+#define FLAG_7                  64
+#define FLAG_8                  128
+
 #include <Arduino.h>
 #include <PCF8574.h>
 #include <LM75.h>
@@ -45,6 +55,7 @@ void vPCFTask( void * );
 void vRTCTask( void * );
 void vDotTask( void * );
 void vWateringTask( void * );
+void vBarrelTask( void * );
 
 // FreeRTOS definitions
 
@@ -52,10 +63,12 @@ BaseType_t getMutex( SemaphoreHandle_t );
 BaseType_t returnMutex( SemaphoreHandle_t );
 BaseType_t setSemaphore( SemaphoreHandle_t );
 BaseType_t waitSemaphore( SemaphoreHandle_t );
+EventBits_t waitFlag( EventBits_t );
+EventBits_t setFlag( EventBits_t );
+EventBits_t resetFlag( EventBits_t );
 
 extern SemaphoreHandle_t i2cMutex;
-extern SemaphoreHandle_t minutesCheckSemaphore;
-extern SemaphoreHandle_t nightSemaphore = 0;
+extern EventGroupHandle_t eventGroup;
 
 // ----------------------------------------------
 

@@ -6,9 +6,8 @@ void setup( void )
   while (!Serial)
     delay(10);
 
-  minutesCheckSemaphore = xSemaphoreCreateBinary();
-  nightSemaphore = xSemaphoreCreateBinary();
-
+  eventGroup = xEventGroupCreate();
+  
   Serial.println(__FILE__ __DATE__);
   Serial.print(F("Starting I2C interface..."));
   if( Wire.begin(I2C_SDA, I2C_SCL) ){
@@ -49,6 +48,7 @@ void setup( void )
 
   xTaskCreate(vDotTask, "dotTask", 1500, NULL, 5, NULL);
   xTaskCreate(vWateringTask, "WateringTask", 1500, NULL, 20, NULL);  
+  xTaskCreate(vBarrelTask,  "BarrelTask",  1500, NULL, 20, NULL);
 
 }  // setup( void )
 

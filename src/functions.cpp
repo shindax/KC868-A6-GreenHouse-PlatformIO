@@ -19,3 +19,18 @@ BaseType_t waitSemaphore( SemaphoreHandle_t  semaphore )
 {
     return xSemaphoreTake( semaphore, portMAX_DELAY );
 }
+
+EventBits_t waitFlag( EventBits_t flag )
+{
+    return xEventGroupWaitBits( eventGroup, flag, pdFALSE, pdTRUE, portMAX_DELAY );
+}
+
+EventBits_t setFlag( EventBits_t flag )
+{
+    return xEventGroupSetBits( eventGroup, flag ); 
+}
+
+EventBits_t resetFlag( EventBits_t flag )
+{
+    return xEventGroupClearBits( eventGroup, flag ); 
+}
