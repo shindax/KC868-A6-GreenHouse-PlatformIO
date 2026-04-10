@@ -6,23 +6,23 @@ void vPCFTask(void * parameter )
   {
       if( ! digitalRead( BUTTON_PIN )){
             if( !getFlag( ALARM_FLAG ) ){
+                  Serial.println();
                   Serial.println("Alarm!");
                   setFlag( ALARM_FLAG );              
-                  setOutputs( OUT_5_FLAG );
+                  setOutputs( OUT_5 );
             }// if( !getFlag( ALARM_FLAG ) ){
         }// if( ! digitalRead( BUTTON_PIN )){
 
     if( i2cMutex ){
-      uint8_t temp;
-      uint16_t state = getInputsOutputsState();
-      if( xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){
+      if( waitMutex( i2cMutex )){
         Wire.setClock(WIRE_BUS_CLOCK);
-        pcfOut.write8( ~ ( state >> 8 ) ); // Sent output flags to hardware outputs
-        uint8_t inputs = pcfIn.read8() ^ 0xFF;
-        xSemaphoreGive( i2cMutex );
-        clearInputs( ( state & 0x3F ) ^ inputs );
-        setInputs( inputs );
-      }
+
+        updateInputs( pcfIn.read8() ^ 0xFF ); // Read and inverse inputs
+        pcfOut.write8( ~ ( getInputsOutputsState() >> 8 ) ); // Inverse and send output flags to hardware outputs
+
+        returnMutex( i2cMutex );
+      }// if( waitMutex( i2cMutex ) ){
+
     }// if( i2cMutex ){
     vTaskDelay(20);
   }

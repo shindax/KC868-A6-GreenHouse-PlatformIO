@@ -5,7 +5,7 @@ void vBarrelTask( void * parameter )
     int cnt = 0;
     while(1){
         waitFlag( MIDNIGHT_HAS_COME_FLAG );
-        EventBits_t bits = xEventGroupGetBits( eventGroup );
+        Serial.println();
         Serial.print("Barrel task pass: ");
         Serial.println(cnt);
         cnt ++;

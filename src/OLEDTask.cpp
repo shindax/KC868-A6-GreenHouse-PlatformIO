@@ -17,12 +17,17 @@ void OLEDClearAndPrint( int x, int y, String oldValue, String newValue, const un
 
 void vOLEDTask(void *parameter)
 {
+  int inputs = 0, outputs = 0;
   if( i2cMutex )
     while(1){
-      if( 
-          xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE 
-        ){
+      if(  waitMutex( i2cMutex ) ){
           u8g2.setBusClock(OLED_BUS_CLOCK);
+
+          int newInputs;
+          int newOutputs;
+
+          newInputs = getInputsOutputsState();
+          newOutputs = newInputs >> 8;
 
           String monthName = monthNames[now.month() - 1];
           String dayOfWeek = daysOfTheWeek[now.dayOfTheWeek()];
@@ -38,19 +43,44 @@ void vOLEDTask(void *parameter)
           oldValue = formattedDate;
           formattedDate = dayStr + " " + monthName + " " + dayOfWeek;
           newValue = formattedDate;  
-          OLEDClearAndPrint( 20, 40, oldValue, newValue, u8g2_font_lubR10_tr );
+          // OLEDClearAndPrint( 20, 40, oldValue, newValue, u8g2_font_lubR10_tr );
 
           oldValue = formattedTime;
           formattedTime = hourStr + ":" + minuteStr + ":" + secondStr;
           newValue = formattedTime;  
-          OLEDClearAndPrint( 30, 60, oldValue, newValue, u8g2_font_lubR12_tr );
+          // OLEDClearAndPrint( 30, 60, oldValue, newValue, u8g2_font_lubR12_tr );
+          OLEDClearAndPrint( 30, 40, oldValue, newValue, u8g2_font_lubR12_tr );          
 
-          oldValue = String( prev_temperature ) + String("C");
-          newValue = String( temperature ) + String("C");  
-          OLEDClearAndPrint( 0, 20, oldValue, newValue, u8g2_font_lubR10_tr );
+          // oldValue = String( prev_temperature ) + String("C");
+          // newValue = String( temperature ) + String("C");  
+          // OLEDClearAndPrint( 0, 20, oldValue, newValue, u8g2_font_lubR10_tr );
+
+          oldValue = "";
+          newValue = "";
+
+          for( int i = 0; i < 6; i ++){
+            oldValue += inputs & ( 1 << i ) ? "0" : "O";
+            newValue += newInputs & ( 1 << i ) ? "0" : "O";
+          }
+          
+          inputs = newInputs ;
+          // OLEDClearAndPrint( 60, 20, oldValue, newValue, u8g2_font_lubR10_tr );
+          OLEDClearAndPrint( 14, 20, oldValue, newValue, u8g2_font_iconquadpix_m_all );
+
+          oldValue = "";
+          newValue = "";
+
+          for( int i = 0; i < 6; i ++){
+            oldValue += outputs & ( 1 << i ) ? "0" : "O";
+            newValue += newOutputs & ( 1 << i ) ? "0" : "O";
+          }
+          
+          outputs = newOutputs ;
+          // OLEDClearAndPrint( 60, 20, oldValue, newValue, u8g2_font_lubR10_tr );
+          OLEDClearAndPrint( 14, 60, oldValue, newValue, u8g2_font_iconquadpix_m_all );
 
           u8g2.sendBuffer();
-          xSemaphoreGive( i2cMutex );
+          returnMutex( i2cMutex );
           vTaskDelay(200);
       }
   }

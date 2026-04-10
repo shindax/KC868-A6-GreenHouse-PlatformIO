@@ -23,6 +23,7 @@ float temperature = 0, prev_temperature = 0;
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, I2C_SCL, I2C_SDA);
 
 SemaphoreHandle_t i2cMutex = 0;
+SemaphoreHandle_t inputOutputMutex = 0;
 EventGroupHandle_t eventGroup = 0;
 EventGroupHandle_t inputsOutputs = 0;
 
@@ -38,12 +39,15 @@ void stackSizeCalc( void )
 
 void vDotTask( void * parameter ) 
 {
+  int count = 0;
   while(1){
     Serial.print(".");
     prev_temperature = temperature;
     temperature += 0.01;
-    updateOutputs(( int ) temperature );
-    vTaskDelay(5000);
+    count ++;
+    Serial.print( count );
+    updateOutputs( count );
+    vTaskDelay(300000);
   }
   vTaskDelete(NULL);
 }// vDotTask

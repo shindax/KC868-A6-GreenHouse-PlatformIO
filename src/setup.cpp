@@ -14,11 +14,12 @@ void setup( void )
   if( Wire.begin(I2C_SDA, I2C_SCL) ){
     Serial.println(F("done."));
     i2cMutex = xSemaphoreCreateMutex();
+    inputOutputMutex = xSemaphoreCreateMutex();
   }
     else
         Serial.println(F("failed."));
   
-  if( i2cMutex && xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){ // I2C available
+  if( i2cMutex && waitMutex( i2cMutex ) ){ // I2C available
         initModule( pcfIn.begin(), "Initialising inputs...", "done.", "Error initialising PCF8574 input!" );
         initModule( pcfOut.begin(), "Initialising outputs...", "done.", "Error initialising PCF8574 output!" );
         initModule( rtc.begin(), "Starting RTC...", "done.", "Couldn't find RTC" );
@@ -41,7 +42,7 @@ void setup( void )
       xTaskCreate(vRTCTask,  "RTCTask",  4000, NULL, 5, NULL);      
       xTaskCreate(vOLEDTask, "OLEDTask", 4000, NULL, 5, NULL);
       xTaskCreate(vPCFTask,  "PCFTask",  4000, NULL, 20, NULL);
-      xSemaphoreGive( i2cMutex );
+      returnMutex( i2cMutex );
   }
 
   pinMode( BUTTON_PIN, INPUT_PULLUP );

@@ -11,48 +11,57 @@
 #define BUTTON_PIN      0
 
 // Flags
-#define MINUTE_PASSED_FLAG      1 << 0
-#define MIDNIGHT_HAS_COME_FLAG  1 << 1
-#define FLAG_2                  1 << 2
-#define FLAG_3                  1 << 3
-#define FLAG_4                  1 << 4
-#define FLAG_5                  1 << 5
-#define FLAG_6                  1 << 6
-#define FLAG_7                  1 << 7
+#define MINUTE_PASSED_FLAG      BIT0
+#define MIDNIGHT_HAS_COME_FLAG  BIT1
+#define BARREL_IS_FULL_FLAG     BIT2
+#define ONBOARD_BUTTON_FLAG     BIT3
+#define FLAG_4                  BIT4
+#define FLAG_5                  BIT5
+#define FLAG_6                  BIT6
+#define FLAG_7                  BIT7
 
-#define FLAG_8                  1 << 8
-#define FLAG_9                  1 << 9
-#define FLAG_10                 1 << 10
-#define FLAG_11                 1 << 11
-#define FLAG_12                 1 << 12
-#define FLAG_13                 1 << 13
-#define FLAG_14                 1 << 14
-#define ALARM_FLAG              1 << 15
+#define FLAG_8                  BIT8
+#define FLAG_9                  BIT9
+#define FLAG_10                 BIT10
+#define FLAG_11                 BIT11
+#define FLAG_12                 BIT12
+#define FLAG_13                 BIT13
+#define FLAG_14                 BIT14
+#define FLAG_15                 BIT15
 
-#define IN_0_FLAG               1 << 0
-#define IN_1_FLAG               1 << 1
-#define IN_2_FLAG               1 << 2
-#define IN_3_FLAG               1 << 3
-#define IN_4_FLAG               1 << 4
-#define IN_5_FLAG               1 << 5
-#define FLAG_22                 1 << 6
-#define BUTTON_INPUT            1 << 7
+#define FLAG_16                 BIT16
+#define FLAG_17                 BIT17
+#define FLAG_18                 BIT18
+#define FLAG_19                 BIT19
+#define FLAG_20                 BIT20
+#define FLAG_21                 BIT21
+#define FLAG_22                 BIT22
+#define ALARM_FLAG              BIT23
 
-#define OUT_0_FLAG              1 << 0
-#define OUT_1_FLAG              1 << 1
-#define OUT_2_FLAG              1 << 2
-#define OUT_3_FLAG              1 << 3
-#define OUT_4_FLAG              1 << 4
-#define OUT_5_FLAG              1 << 5
-#define FLAG_30                 1 << 6
-#define FLAG_31                 1 << 7
+#define BARREL_FULL_SW          BIT0
+#define IN_1                    BIT1
+#define IN_2                    BIT2
+#define IN_3                    BIT3
+#define IN_4                    BIT4
+#define IN_5                    BIT5
+#define IN_6                    BIT6
+#define IN_7                    BIT7
+
+#define OUT_0                   BIT0
+#define OUT_1                   BIT1
+#define OUT_2                   BIT2
+#define OUT_3                   BIT3
+#define OUT_4                   BIT4
+#define OUT_5                   BIT5
+#define OUT_6                   BIT6
+#define OUT_7                   BIT7
 
 #define USE_ALARM_OUTPUT
 
 #ifdef USE_ALARM_OUTPUT
 #define PORT_MASK               0x1F
 #else
-#define PORT_MASK               0x1F
+#define PORT_MASK               0x3F
 #endif
 
 #include <Arduino.h>
@@ -80,22 +89,24 @@ void vBarrelTask( void * );
 
 // FreeRTOS definitions
 
-BaseType_t getMutex( SemaphoreHandle_t );
+BaseType_t waitMutex( SemaphoreHandle_t );
 BaseType_t returnMutex( SemaphoreHandle_t );
 
-EventBits_t waitFlag( EventBits_t );
+EventBits_t waitFlag( EventBits_t, BaseType_t = pdFALSE );
 EventBits_t getFlag( EventBits_t );
 EventBits_t setFlag( EventBits_t );
 EventBits_t resetFlag( EventBits_t );
 
-EventBits_t setInputs( EventBits_t );
-EventBits_t clearInputs( EventBits_t = 0x3F );
+EventBits_t updateInputs( EventBits_t flag );
+
 EventBits_t setOutputs( EventBits_t );
 EventBits_t clearOutputs( EventBits_t  = PORT_MASK );
 EventBits_t updateOutputs( EventBits_t );
+
 EventBits_t getInputsOutputsState( void );
 
 extern SemaphoreHandle_t i2cMutex;
+extern SemaphoreHandle_t inputOutputMutex;
 extern EventGroupHandle_t eventGroup;
 extern EventGroupHandle_t inputsOutputs;
 

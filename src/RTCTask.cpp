@@ -6,11 +6,11 @@ void vRTCTask( void * parameter )
 
   if( i2cMutex )
     while(1){
-      if( getMutex( i2cMutex ) == pdTRUE ){        
+      if( waitMutex( i2cMutex ) ){
         Wire.setClock(WIRE_BUS_CLOCK);
         now = rtc.now();
         returnMutex( i2cMutex );
-      }// if( xSemaphoreTake( i2cMutex, portMAX_DELAY ) == pdTRUE ){
+      }// if( waitMutex( i2cMutex ) ){
       
       if( now.second() == 0 )// Check time every minute
           setFlag( MINUTE_PASSED_FLAG );
